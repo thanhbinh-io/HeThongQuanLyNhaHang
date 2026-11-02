@@ -1,0 +1,2 @@
+# HeThongQuanLyNhaHang
+HỆ THỐNG THÔNG TIN QUẢN LÝ BÁN HÀNG VÀ PHỤC VỤ NHÀ HÀNG SINH THÁI THANH THẢO
