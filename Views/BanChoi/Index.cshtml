@@ -1,0 +1,125 @@
+@model IEnumerable<NhaHangThanhThao.Models.BanChoi>
+
+@{
+    ViewData["Title"] = "Quản lý bàn/chòi";
+    var total = Model.Count();
+    var empty = Model.Count(x => x.TrangThai == "Trong");
+    var booked = Model.Count(x => x.TrangThai == "DaDatTruoc");
+    var serving = Model.Count(x => x.TrangThai == "DangPhucVu");
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-chair"></i> Không gian phục vụ</span>
+        <h1 class="page-title">Quản lý bàn/chòi</h1>
+        <p class="page-subtitle">Theo dõi nhanh trạng thái, sức chứa và mã QR gọi món của từng bàn/chòi.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary-custom">
+            <i class="fa-solid fa-plus me-2"></i>Thêm Bàn/Chòi
+        </a>
+    </div>
+</div>
+
+<section class="stats-grid">
+    <div class="stat-card stat-card--gold">
+        <span class="stat-card__icon"><i class="fa-solid fa-utensils"></i></span>
+        <span><span class="stat-card__value">@total</span><span class="stat-card__label">Tổng số bàn/chòi</span></span>
+    </div>
+    <div class="stat-card stat-card--green">
+        <span class="stat-card__icon"><i class="fa-solid fa-circle-check"></i></span>
+        <span><span class="stat-card__value">@empty</span><span class="stat-card__label">Đang trống</span></span>
+    </div>
+    <div class="stat-card stat-card--orange">
+        <span class="stat-card__icon"><i class="fa-regular fa-calendar-check"></i></span>
+        <span><span class="stat-card__value">@booked</span><span class="stat-card__label">Đã đặt trước</span></span>
+    </div>
+    <div class="stat-card stat-card--red">
+        <span class="stat-card__icon"><i class="fa-solid fa-fire-burner"></i></span>
+        <span><span class="stat-card__value">@serving</span><span class="stat-card__label">Đang phục vụ</span></span>
+    </div>
+</section>
+
+<div class="toolbar">
+    <div class="input-icon flex-grow-1">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" class="form-control" placeholder="Tìm theo mã, tên bàn hoặc khu vực" data-filter-target=".js-table-card" />
+    </div>
+    <select class="form-select" style="max-width: 240px" data-status-filter=".js-table-card">
+        <option value="">Tất cả trạng thái</option>
+        <option value="Trong">Trống</option>
+        <option value="DaDatTruoc">Đã đặt trước</option>
+        <option value="DangPhucVu">Đang phục vụ</option>
+        <option value="NgungSuDung">Ngừng sử dụng</option>
+    </select>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="content-card">
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-chair"></i>
+                <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                <p>Hãy tạo bàn/chòi đầu tiên để bắt đầu quản lý không gian phục vụ.</p>
+                <a asp-action="Create" class="btn btn-primary-custom">Thêm Bàn/Chòi</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="table-grid">
+        @foreach (var item in Model)
+        {
+            string statusClass = item.TrangThai switch
+            {
+                "Trong" => "empty",
+                "DaDatTruoc" => "booked",
+                "DangPhucVu" => "serving",
+                "NgungSuDung" => "stopped",
+                _ => "stopped"
+            };
+
+            string tenTrangThai = item.TrangThai switch
+            {
+                "Trong" => "Trống",
+                "DaDatTruoc" => "Đã đặt trước",
+                "DangPhucVu" => "Đang phục vụ",
+                "NgungSuDung" => "Ngừng sử dụng",
+                _ => item.TrangThai
+            };
+
+            string icon = item.TenBan.Contains("Chòi", StringComparison.OrdinalIgnoreCase) ? "fa-campground" : "fa-chair";
+
+            <article class="restaurant-table-card restaurant-table-card--@statusClass js-table-card"
+                     data-status="@item.TrangThai"
+                     data-search="@($"{item.MaBan} {item.TenBan} {item.KhuVuc} {tenTrangThai}")">
+                <div class="restaurant-table-card__top">
+                    <span class="restaurant-table-card__icon"><i class="fa-solid @icon"></i></span>
+                    <span class="status-badge status-badge--@statusClass">@tenTrangThai</span>
+                </div>
+
+                <h2 class="restaurant-table-card__title">@item.TenBan</h2>
+                <div class="restaurant-table-card__meta">
+                    <span><i class="fa-solid fa-hashtag me-2"></i>@item.MaBan</span>
+                    <span><i class="fa-solid fa-location-dot me-2"></i>@item.KhuVuc</span>
+                    <span><i class="fa-solid fa-users me-2"></i>Sức chứa: @item.SucChua khách</span>
+                </div>
+                <div class="restaurant-table-card__token">@item.Qrtoken</div>
+
+                <div class="restaurant-table-card__actions">
+                    <a asp-action="InQr" asp-route-id="@item.MaBan" class="btn btn-outline-primary btn-icon" data-bs-toggle="tooltip" data-bs-title="In QR">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@item.MaBan" class="btn btn-warning btn-icon" data-bs-toggle="tooltip" data-bs-title="Sửa">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+                    <a asp-controller="DonDatBan" asp-action="Create" class="btn btn-primary-custom btn-sm ms-auto">
+                        <i class="fa-regular fa-calendar-plus me-1"></i>Đặt
+                    </a>
+                </div>
+            </article>
+        }
+    </div>
+}

@@ -1,0 +1,118 @@
+@model IEnumerable<NhaHangThanhThao.ViewModels.DonGoiMonIndexViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý đơn gọi món";
+    var total = Model.Count();
+    var serving = Model.Count(x => x.TrangThai == "DangPhucVu");
+    var paid = Model.Count(x => x.TrangThai == "DaThanhToan");
+    var revenue = Model.Sum(x => x.TongTien);
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-clipboard-list"></i> Gọi món</span>
+        <h1 class="page-title">Quản lý đơn gọi món</h1>
+        <p class="page-subtitle">Theo dõi các đơn đang phục vụ, tổng tiền tạm tính và mở nhanh chi tiết để thêm/trả món.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary-custom">
+            <i class="fa-solid fa-plus me-2"></i>Lập đơn gọi món
+        </a>
+    </div>
+</div>
+
+<section class="stats-grid">
+    <div class="stat-card stat-card--gold">
+        <span class="stat-card__icon"><i class="fa-solid fa-receipt"></i></span>
+        <span><span class="stat-card__value">@total</span><span class="stat-card__label">Tổng số đơn</span></span>
+    </div>
+    <div class="stat-card stat-card--red">
+        <span class="stat-card__icon"><i class="fa-solid fa-fire-burner"></i></span>
+        <span><span class="stat-card__value">@serving</span><span class="stat-card__label">Đang phục vụ</span></span>
+    </div>
+    <div class="stat-card stat-card--green">
+        <span class="stat-card__icon"><i class="fa-solid fa-circle-check"></i></span>
+        <span><span class="stat-card__value">@paid</span><span class="stat-card__label">Đã thanh toán</span></span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-card__icon"><i class="fa-solid fa-coins"></i></span>
+        <span><span class="stat-card__value">@revenue.ToString("N0")</span><span class="stat-card__label">Tạm tính</span></span>
+    </div>
+</section>
+
+<div class="toolbar">
+    <div class="input-icon flex-grow-1">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" class="form-control" placeholder="Tìm theo mã đơn hoặc bàn/chòi" data-filter-target=".js-order-row" />
+    </div>
+    <select class="form-select" style="max-width: 220px" data-status-filter=".js-order-row">
+        <option value="">Tất cả trạng thái</option>
+        <option value="DangPhucVu">Đang phục vụ</option>
+        <option value="DaThanhToan">Đã thanh toán</option>
+        <option value="DaHuy">Đã hủy</option>
+    </select>
+</div>
+
+<div class="table-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-clipboard-list"></i>
+                <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                <p>Lập đơn gọi món đầu tiên khi khách vào bàn.</p>
+                <a asp-action="Create" class="btn btn-primary-custom">Lập đơn gọi món</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Bàn/chòi</th>
+                        <th>Thời gian tạo</th>
+                        <th>Trạng thái</th>
+                        <th>Tổng tạm tính</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        string statusClass = item.TrangThai switch
+                        {
+                            "DangPhucVu" => "serving",
+                            "DaThanhToan" => "paid",
+                            "DaHuy" => "cancelled",
+                            _ => "stopped"
+                        };
+
+                        string tenTrangThai = item.TrangThai switch
+                        {
+                            "DangPhucVu" => "Đang phục vụ",
+                            "DaThanhToan" => "Đã thanh toán",
+                            "DaHuy" => "Đã hủy",
+                            _ => item.TrangThai
+                        };
+
+                        <tr class="js-order-row" data-status="@item.TrangThai" data-search="@($"{item.MaDonGoiMon} {item.TenBan} {tenTrangThai}")">
+                            <td><strong>@item.MaDonGoiMon</strong></td>
+                            <td>@item.TenBan</td>
+                            <td>@item.ThoiGianTao.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><span class="status-badge status-badge--@statusClass">@tenTrangThai</span></td>
+                            <td class="price-text">@item.TongTien.ToString("N0") VNĐ</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.MaDonGoiMon" class="btn btn-info btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-title="Chi tiết">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

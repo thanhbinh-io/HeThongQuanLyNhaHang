@@ -1,0 +1,61 @@
+@model NhaHangThanhThao.Models.DanhMucMon
+
+@{
+    ViewData["Title"] = "Thêm danh mục món";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-plus"></i> Danh mục mới</span>
+        <h1 class="page-title">Thêm danh mục món</h1>
+        <p class="page-subtitle">Tạo nhóm món để thực đơn rõ ràng và thao tác gọi món nhanh hơn.</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" class="form-shell">
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="MaDanhMuc" class="form-label">Mã danh mục</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <input asp-for="MaDanhMuc" class="form-control" placeholder="Ví dụ: HAI_SAN, DO_UONG" />
+                </div>
+                <span asp-validation-for="MaDanhMuc" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TenDanhMuc" class="form-label">Tên danh mục</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <input asp-for="TenDanhMuc" class="form-control" placeholder="Ví dụ: Hải sản, Đồ uống" />
+                </div>
+                <span asp-validation-for="TenDanhMuc" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-lightbulb"></i> Quy ước</span>
+        <ul class="summary-list">
+            <li><span>Mã danh mục</span><strong>Không dấu</strong></li>
+            <li><span>Tên danh mục</span><strong>Dễ đọc</strong></li>
+            <li><span>Thứ tự hiển thị</span><strong>Theo mã</strong></li>
+        </ul>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

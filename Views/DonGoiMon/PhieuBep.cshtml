@@ -1,0 +1,125 @@
+@model NhaHangThanhThao.ViewModels.PhieuBepViewModel
+
+@{
+    var tieuDePhieu = Model.LaPhieuBoSung ? "PHIẾU CHẾ BIẾN BỔ SUNG" : "PHIẾU CHẾ BIẾN";
+    ViewData["Title"] = tieuDePhieu;
+}
+
+<div class="page-header no-print">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-kitchen-set"></i> Bếp</span>
+        <h1 class="page-title">@tieuDePhieu</h1>
+        <p class="page-subtitle">Phiếu chỉ lấy các món mới có trạng thái chờ in bếp để tránh in trùng món đã chuyển chế biến.</p>
+    </div>
+    <div class="page-actions">
+        @if (Model.DanhSachMon.Any())
+        {
+            @if (Model.DaChuyenBep)
+            {
+                <button type="button" onclick="window.print()" class="btn btn-primary-custom">
+                    <i class="fa-solid fa-print me-2"></i>In lại phiếu
+                </button>
+            }
+            else
+            {
+                <form asp-action="InPhieuBep" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.MaDonGoiMon" />
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="fa-solid fa-print me-2"></i>In và chuyển bếp
+                    </button>
+                </form>
+            }
+        }
+        <a asp-action="Details" asp-route-id="@Model.MaDonGoiMon" class="btn btn-secondary">Quay lại đơn</a>
+    </div>
+</div>
+
+@if (Model.DaChuyenBep && Model.DanhSachMon.Any())
+{
+    <div class="alert alert-success no-print">
+        <i class="fa-solid fa-circle-check me-2"></i>
+        Đã chuyển các món trên phiếu sang trạng thái Đang chế biến. Phiếu in đang được mở.
+    </div>
+}
+
+@if (!Model.DanhSachMon.Any())
+{
+    <div class="content-card no-print">
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-print"></i>
+                <h2 class="empty-state__title">Không có món mới để in</h2>
+                <p>Đơn này hiện không còn món nào ở trạng thái chờ in bếp.</p>
+                <a asp-action="Details" asp-route-id="@Model.MaDonGoiMon" class="btn btn-secondary">Quay lại đơn</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <article class="kitchen-ticket print-surface">
+        <header class="kitchen-ticket__header">
+            <div class="kitchen-ticket__brand">Nhà Hàng Thanh Thảo</div>
+            <h1 class="kitchen-ticket__title">@tieuDePhieu</h1>
+            <div class="kitchen-ticket__meta">
+                <span>Mã đơn: <strong>@Model.MaDonGoiMon</strong></span>
+                <span>Bàn/chòi: <strong>@Model.TenBan</strong></span>
+                <span>Giờ gọi: <strong>@Model.ThoiGianTao.ToString("dd/MM/yyyy HH:mm")</strong></span>
+                <span>Giờ in: <strong>@Model.ThoiGianIn.ToString("dd/MM/yyyy HH:mm")</strong></span>
+            </div>
+        </header>
+
+        <div class="kitchen-ticket__rule"></div>
+
+        <table class="table kitchen-ticket__table align-middle">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Món chế biến</th>
+                    <th>ĐVT</th>
+                    <th class="text-center">SL</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.DanhSachMon.Count; i++)
+                {
+                    var item = Model.DanhSachMon[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td><strong>@item.TenMon</strong></td>
+                        <td>@item.DonViTinh</td>
+                        <td class="text-center kitchen-ticket__qty">@item.SoLuong</td>
+                        <td>@(string.IsNullOrWhiteSpace(item.GhiChu) ? "-" : item.GhiChu)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="kitchen-ticket__rule"></div>
+
+        <div class="kitchen-ticket__signatures">
+            <div>
+                <strong>Bếp nhận</strong>
+                <span>Ký, ghi rõ họ tên</span>
+            </div>
+            <div>
+                <strong>Nhân viên chuyển phiếu</strong>
+                <span>Ký, ghi rõ họ tên</span>
+            </div>
+        </div>
+    </article>
+}
+
+@section Scripts {
+    @if (Model.DaChuyenBep && Model.DanhSachMon.Any())
+    {
+        <script>
+            window.addEventListener("load", function () {
+                window.setTimeout(function () {
+                    window.print();
+                }, 300);
+            });
+        </script>
+    }
+}

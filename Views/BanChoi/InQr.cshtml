@@ -1,0 +1,34 @@
+@model NhaHangThanhThao.ViewModels.BanChoiQrViewModel
+
+@{
+    ViewData["Title"] = "In mã QR bàn/chòi";
+}
+
+<div class="page-header no-print">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-qrcode"></i> QR gọi món</span>
+        <h1 class="page-title">Mã QR cho @Model.TenBan</h1>
+        <p class="page-subtitle">In và đặt mã tại bàn để khách xem thực đơn, gọi món nhanh.</p>
+    </div>
+    <div class="page-actions">
+        <button type="button" onclick="window.print()" class="btn btn-primary-custom">
+            <i class="fa-solid fa-print me-2"></i>In mã QR
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
+</div>
+
+<div class="qr-print-card print-surface">
+    <div class="qr-print-card__brand">
+        <i class="fa-solid fa-utensils me-2"></i>Nhà Hàng Thanh Thảo
+    </div>
+    <h2 class="page-title mt-2">@Model.TenBan</h2>
+    <p class="text-muted mb-0">Mã bàn: <strong>@Model.MaBan</strong></p>
+
+    <img class="qr-print-card__image"
+         src="@Url.Action("QrImage", "BanChoi", new { id = Model.MaBan })"
+         alt="QR gọi món cho @Model.TenBan" />
+
+    <p class="mb-3">Quét mã QR để xem thực đơn và gọi món tại bàn.</p>
+    <small class="qr-print-card__url">@Model.UrlMenu</small>
+</div>

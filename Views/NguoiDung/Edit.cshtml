@@ -1,0 +1,113 @@
+@model NhaHangThanhThao.ViewModels.NguoiDungEditViewModel
+
+@{
+    ViewData["Title"] = "Sửa tài khoản nhân viên";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-regular fa-pen-to-square"></i> Cập nhật tài khoản</span>
+        <h1 class="page-title">Sửa thông tin nhân viên</h1>
+        <p class="page-subtitle">Cập nhật thông tin đăng nhập, vai trò, trạng thái và mật khẩu nếu cần.</p>
+    </div>
+</div>
+
+<form asp-action="Edit" asp-route-id="@Model.MaNguoiDung" method="post" class="form-shell">
+    <input asp-for="MaNguoiDung" type="hidden" />
+
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        @if (Model.LaTaiKhoanHienTai)
+        {
+            <div class="alert alert-info border-0 shadow-sm">
+                <i class="fa-solid fa-circle-info me-2"></i>
+                Đây là tài khoản đang đăng nhập. Hệ thống sẽ không cho tự khóa hoặc tự bỏ quyền quản lý.
+            </div>
+        }
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="HoTen" class="form-label">Họ tên</label>
+                <div class="input-icon">
+                    <i class="fa-regular fa-user"></i>
+                    <input asp-for="HoTen" class="form-control" />
+                </div>
+                <span asp-validation-for="HoTen" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-phone"></i>
+                    <input asp-for="SoDienThoai" class="form-control" />
+                </div>
+                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-user-tag"></i>
+                    <input asp-for="TenDangNhap" class="form-control" autocomplete="username" />
+                </div>
+                <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="MatKhauMoi" class="form-label">Mật khẩu mới</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-lock"></i>
+                    <input asp-for="MatKhauMoi" type="password" class="form-control" autocomplete="new-password" placeholder="Để trống nếu không đổi" />
+                </div>
+                <span asp-validation-for="MatKhauMoi" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="MaVaiTro" class="form-label">Vai trò</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <select asp-for="MaVaiTro" asp-items="ViewBag.VaiTros" class="form-select">
+                        <option value="">-- Chọn vai trò --</option>
+                    </select>
+                </div>
+                <span asp-validation-for="MaVaiTro" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-toggle-on"></i>
+                    <select asp-for="TrangThai" class="form-select">
+                        <option value="HoatDong">Hoạt động</option>
+                        <option value="Khoa">Khóa tài khoản</option>
+                    </select>
+                </div>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu thay đổi
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-user-gear"></i> Khi chỉnh sửa</span>
+        <ul class="summary-list">
+            <li><span>Mật khẩu</span><strong>Trống = giữ nguyên</strong></li>
+            <li><span>Khóa</span><strong>Không thể đăng nhập</strong></li>
+            <li><span>Vai trò</span><strong>Theo quyền truy cập</strong></li>
+            <li><span>Tài khoản hiện tại</span><strong>Được bảo vệ</strong></li>
+        </ul>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,126 @@
+@model NhaHangThanhThao.Models.MonAn
+
+@{
+    ViewData["Title"] = "Sửa món ăn";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-regular fa-pen-to-square"></i> Cập nhật thực đơn</span>
+        <h1 class="page-title">Sửa món ăn</h1>
+        <p class="page-subtitle">Cập nhật thông tin món, giá và trạng thái bán trong thực đơn.</p>
+    </div>
+</div>
+
+<form asp-action="Edit" asp-route-id="@Model.MaMon" method="post" enctype="multipart/form-data" class="form-shell">
+    <input type="hidden" asp-for="MaMon" />
+    <input type="hidden" asp-for="HinhAnh" />
+
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="MaMon" class="form-label">Mã món</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <input asp-for="MaMon" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="TenMon" class="form-label">Tên món</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-bowl-food"></i>
+                    <input asp-for="TenMon" class="form-control" />
+                </div>
+                <span asp-validation-for="TenMon" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="MaDanhMuc" class="form-label">Danh mục</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <select asp-for="MaDanhMuc" asp-items="ViewBag.DanhMucMons" class="form-select">
+                        <option value="">-- Chọn danh mục --</option>
+                    </select>
+                </div>
+                <span asp-validation-for="MaDanhMuc" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="DonViTinh" class="form-label">Đơn vị tính</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <input asp-for="DonViTinh" class="form-control" />
+                </div>
+                <span asp-validation-for="DonViTinh" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="DonGia" class="form-label">Đơn giá</label>
+                <div class="input-group">
+                    <span class="input-group-text money-prefix">₫</span>
+                    <input asp-for="DonGia" type="number" class="form-control" min="0" />
+                </div>
+                <span asp-validation-for="DonGia" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-signal"></i>
+                    <select asp-for="TrangThai" class="form-select">
+                        <option value="DangKinhDoanh">Đang kinh doanh</option>
+                        <option value="HetMon">Hết món</option>
+                        <option value="An">Ẩn</option>
+                    </select>
+                </div>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+
+            <div class="span-2">
+                <label asp-for="HinhAnh" class="form-label">Hình ảnh</label>
+                <input name="hinhAnhFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                <div class="form-text">Chọn ảnh mới nếu muốn thay ảnh hiện tại. Bỏ trống để giữ nguyên.</div>
+                <span asp-validation-for="HinhAnh" class="text-danger"></span>
+            </div>
+
+            <div class="span-2">
+                <label asp-for="MoTa" class="form-label">Mô tả</label>
+                <textarea asp-for="MoTa" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu thay đổi
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-eye"></i> Hiển thị</span>
+        <div class="d-flex align-items-center gap-3 mt-2">
+            <span class="food-thumb">
+                @if (!string.IsNullOrWhiteSpace(Model.HinhAnh))
+                {
+                    <img src="@Model.HinhAnh" alt="@Model.TenMon" onerror="this.remove();" />
+                }
+                <i class="fa-solid fa-bowl-rice"></i>
+            </span>
+            <div>
+                <strong>@Model.TenMon</strong>
+                <div class="price-text">@Model.DonGia.ToString("N0") VNĐ</div>
+            </div>
+        </div>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

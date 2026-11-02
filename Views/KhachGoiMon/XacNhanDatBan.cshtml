@@ -1,0 +1,50 @@
+@model NhaHangThanhThao.ViewModels.XacNhanDatBanViewModel
+
+@{
+    ViewData["Title"] = "Xác nhận đặt bàn";
+}
+
+<div class="qr-menu">
+    <header class="qr-menu__header">
+        <div class="qr-menu__brand">
+            <span class="qr-menu__logo"><i class="fa-solid fa-utensils"></i></span>
+            <div>
+                <div class="qr-menu__title">Nhà Hàng Thanh Thảo</div>
+                <div class="qr-menu__table">@Model.TenBan · Xác nhận đặt bàn</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-form-panel" style="min-height: calc(100vh - 88px);">
+        <div class="auth-card">
+            <span class="page-kicker"><i class="fa-solid fa-user-check"></i> Đặt trước</span>
+            <h1 class="auth-card__title">Xác nhận bàn</h1>
+            <p class="auth-card__subtitle">Nhập số điện thoại đã đặt bàn để bắt đầu gọi món tại @Model.TenBan.</p>
+
+            <form asp-action="XacNhanDatBan" method="post">
+                <input type="hidden" asp-for="QRToken" />
+                <input type="hidden" asp-for="MaBan" />
+                <input type="hidden" asp-for="TenBan" />
+
+                <div class="mb-3">
+                    <label asp-for="SoDienThoai" class="form-label">Số điện thoại đã đặt bàn</label>
+                    <div class="input-icon">
+                        <i class="fa-solid fa-phone"></i>
+                        <input asp-for="SoDienThoai" class="form-control" inputmode="tel" autocomplete="tel" />
+                    </div>
+                    <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary-custom w-100 py-3">
+                    <i class="fa-solid fa-check me-2"></i>Xác nhận
+                </button>
+            </form>
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,79 @@
+@model NhaHangThanhThao.ViewModels.ThemMonVaoDonViewModel
+
+@{
+    ViewData["Title"] = "Thêm món vào đơn";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-plus"></i> Thêm món</span>
+        <h1 class="page-title">Thêm món vào đơn</h1>
+        <p class="page-subtitle">Bổ sung món mới cho phiếu gọi món đang phục vụ.</p>
+    </div>
+</div>
+
+<form asp-action="AddMon" method="post" class="form-shell">
+    <input type="hidden" asp-for="MaDonGoiMon" />
+
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="MaDonGoiMon" class="form-label">Mã đơn gọi món</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                    <input asp-for="MaDonGoiMon" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="MaMon" class="form-label">Món ăn</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-bowl-food"></i>
+                    <select asp-for="MaMon" asp-items="ViewBag.MonAns" class="form-select">
+                        <option value="">-- Chọn món ăn --</option>
+                    </select>
+                </div>
+                <span asp-validation-for="MaMon" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="SoLuong" class="form-label">Số lượng</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-plus-minus"></i>
+                    <input asp-for="SoLuong" type="number" class="form-control" min="1" />
+                </div>
+                <span asp-validation-for="SoLuong" class="text-danger"></span>
+            </div>
+
+            <div class="span-2">
+                <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+                <textarea asp-for="GhiChu" class="form-control" rows="4" placeholder="Ví dụ: ít cay, không hành..."></textarea>
+                <span asp-validation-for="GhiChu" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-plus me-2"></i>Thêm món
+            </button>
+            <a asp-action="Details" asp-route-id="@Model.MaDonGoiMon" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-circle-info"></i> Nhắc nhanh</span>
+        <ul class="summary-list">
+            <li><span>Chỉ món đang bán</span><strong>Được chọn</strong></li>
+            <li><span>Ghi chú</span><strong>Gửi bếp</strong></li>
+            <li><span>Quay lại</span><strong>Chi tiết đơn</strong></li>
+        </ul>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

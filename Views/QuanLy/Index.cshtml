@@ -1,0 +1,100 @@
+@{
+    ViewData["Title"] = "Trang quản lý";
+    var hoTen = Context.Session.GetString("HoTen") ?? "Quản lý";
+    var today = DateTime.Now.ToString("dddd, dd/MM/yyyy");
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-chart-pie"></i> Tổng quan</span>
+        <h1 class="page-title">Xin chào, @hoTen!</h1>
+        <p class="page-subtitle">Bảng điều hướng nhanh cho các nghiệp vụ chính trong ca vận hành ngày @today.</p>
+    </div>
+    <div class="page-actions">
+        <span class="status-badge status-badge--active">Quản lý</span>
+        <a asp-controller="PhucVu" asp-action="Index" class="btn btn-accent">
+            <i class="fa-solid fa-bell-concierge me-2"></i>Mở sơ đồ phục vụ
+        </a>
+    </div>
+</div>
+
+<section class="stats-grid">
+    <a asp-controller="BanChoi" asp-action="Index" class="stat-card stat-card--gold">
+        <span class="stat-card__icon"><i class="fa-solid fa-chair"></i></span>
+        <span>
+            <span class="stat-card__value">Bàn</span>
+            <span class="stat-card__label">Quản lý bàn/chòi, QR và trạng thái</span>
+        </span>
+    </a>
+    <a asp-controller="DonGoiMon" asp-action="Index" class="stat-card stat-card--red">
+        <span class="stat-card__icon"><i class="fa-solid fa-clipboard-list"></i></span>
+        <span>
+            <span class="stat-card__value">Món</span>
+            <span class="stat-card__label">Theo dõi đơn gọi món đang phục vụ</span>
+        </span>
+    </a>
+    <a asp-controller="DonDatBan" asp-action="Index" class="stat-card stat-card--orange">
+        <span class="stat-card__icon"><i class="fa-regular fa-calendar-check"></i></span>
+        <span>
+            <span class="stat-card__value">Đặt</span>
+            <span class="stat-card__label">Lập đơn, giữ bàn và tiền cọc</span>
+        </span>
+    </a>
+    <a asp-controller="BaoCao" asp-action="DoanhThu" class="stat-card stat-card--green">
+        <span class="stat-card__icon"><i class="fa-solid fa-chart-column"></i></span>
+        <span>
+            <span class="stat-card__value">Thu</span>
+            <span class="stat-card__label">Xem doanh thu và hóa đơn đã thanh toán</span>
+        </span>
+    </a>
+</section>
+
+<section class="dashboard-grid">
+    <div class="content-card">
+        <div class="table-card__header px-0 pt-0">
+            <h2 class="table-card__title">Lối tắt vận hành</h2>
+        </div>
+
+        <div class="action-grid mt-3">
+            <a asp-controller="BanChoi" asp-action="Index" class="action-card">
+                <span class="action-card__icon"><i class="fa-solid fa-chair"></i></span>
+                <span>
+                    <span class="action-card__title">Quản lý bàn/chòi</span>
+                    <span class="action-card__text">Tạo bàn, sửa trạng thái, in mã QR.</span>
+                </span>
+            </a>
+            <a asp-controller="DanhMucMon" asp-action="Index" class="action-card">
+                <span class="action-card__icon"><i class="fa-solid fa-layer-group"></i></span>
+                <span>
+                    <span class="action-card__title">Danh mục món</span>
+                    <span class="action-card__text">Sắp xếp nhóm món cho thực đơn.</span>
+                </span>
+            </a>
+            <a asp-controller="MonAn" asp-action="Index" class="action-card">
+                <span class="action-card__icon"><i class="fa-solid fa-bowl-food"></i></span>
+                <span>
+                    <span class="action-card__title">Món ăn</span>
+                    <span class="action-card__text">Cập nhật giá, trạng thái và mô tả.</span>
+                </span>
+            </a>
+            <a asp-controller="HoaDon" asp-action="Index" class="action-card">
+                <span class="action-card__icon"><i class="fa-solid fa-receipt"></i></span>
+                <span>
+                    <span class="action-card__title">Hóa đơn</span>
+                    <span class="action-card__text">Tra cứu hóa đơn đã xuất.</span>
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-list-check"></i> Ca làm việc</span>
+        <h2 class="table-card__title mb-3">Thao tác ưu tiên</h2>
+        <ul class="summary-list">
+            <li><span>Kiểm tra bàn trống</span><strong><i class="fa-solid fa-arrow-right"></i></strong></li>
+            <li><span>Xác nhận đơn đặt đến giờ</span><strong><i class="fa-solid fa-arrow-right"></i></strong></li>
+            <li><span>Theo dõi đơn đang phục vụ</span><strong><i class="fa-solid fa-arrow-right"></i></strong></li>
+            <li><span>Đối soát hóa đơn cuối ca</span><strong><i class="fa-solid fa-arrow-right"></i></strong></li>
+        </ul>
+    </aside>
+</section>

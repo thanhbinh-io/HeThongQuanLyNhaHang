@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-utensils"></i> Nhà Hàng Thanh Thảo</span>
+        <h1 class="page-title">Hệ thống quản lý nhà hàng</h1>
+        <p class="page-subtitle">Giao diện vận hành dành cho quản lý và nhân viên phục vụ.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary-custom">
+            <i class="fa-solid fa-right-to-bracket me-2"></i>Đăng nhập
+        </a>
+    </div>
+</div>
+
+<div class="action-grid">
+    <a asp-controller="Account" asp-action="Login" class="action-card">
+        <span class="action-card__icon"><i class="fa-solid fa-chart-pie"></i></span>
+        <span>
+            <span class="action-card__title">Khu vực quản lý</span>
+            <span class="action-card__text">Theo dõi bàn/chòi, món ăn, hóa đơn và doanh thu.</span>
+        </span>
+    </a>
+    <a asp-controller="Account" asp-action="Login" class="action-card">
+        <span class="action-card__icon"><i class="fa-solid fa-bell-concierge"></i></span>
+        <span>
+            <span class="action-card__title">Khu vực phục vụ</span>
+            <span class="action-card__text">Mở sơ đồ bàn, lập đơn và thêm món nhanh.</span>
+        </span>
+    </a>
+</div>

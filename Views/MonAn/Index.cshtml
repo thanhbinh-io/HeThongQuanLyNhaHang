@@ -1,0 +1,160 @@
+@model IEnumerable<NhaHangThanhThao.Models.MonAn>
+
+@{
+    ViewData["Title"] = "Quản lý món ăn";
+    var total = Model.Count();
+    var active = Model.Count(x => x.TrangThai == "DangKinhDoanh");
+    var soldOut = Model.Count(x => x.TrangThai == "HetMon");
+    var hidden = Model.Count(x => x.TrangThai == "An");
+    var categories = Model
+        .Select(x => new { x.MaDanhMuc, TenDanhMuc = x.MaDanhMucNavigation?.TenDanhMuc ?? x.MaDanhMuc })
+        .Distinct()
+        .OrderBy(x => x.TenDanhMuc)
+        .ToList();
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-bowl-food"></i> Thực đơn</span>
+        <h1 class="page-title">Quản lý món ăn</h1>
+        <p class="page-subtitle">Tìm nhanh món, kiểm tra giá bán và trạng thái kinh doanh theo danh mục.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary-custom">
+            <i class="fa-solid fa-plus me-2"></i>Thêm Món
+        </a>
+    </div>
+</div>
+
+<section class="stats-grid">
+    <div class="stat-card stat-card--gold">
+        <span class="stat-card__icon"><i class="fa-solid fa-book-open"></i></span>
+        <span><span class="stat-card__value">@total</span><span class="stat-card__label">Tổng số món</span></span>
+    </div>
+    <div class="stat-card stat-card--green">
+        <span class="stat-card__icon"><i class="fa-solid fa-circle-check"></i></span>
+        <span><span class="stat-card__value">@active</span><span class="stat-card__label">Đang kinh doanh</span></span>
+    </div>
+    <div class="stat-card stat-card--orange">
+        <span class="stat-card__icon"><i class="fa-solid fa-clock"></i></span>
+        <span><span class="stat-card__value">@soldOut</span><span class="stat-card__label">Hết món</span></span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-card__icon"><i class="fa-solid fa-eye-slash"></i></span>
+        <span><span class="stat-card__value">@hidden</span><span class="stat-card__label">Đang ẩn</span></span>
+    </div>
+</section>
+
+<div class="toolbar">
+    <div class="input-icon flex-grow-1">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" class="form-control" placeholder="Tìm theo tên món, mã món, danh mục" data-filter-target=".js-food-row" />
+    </div>
+    <select class="form-select" style="max-width: 220px" id="categoryFilter">
+        <option value="">Tất cả danh mục</option>
+        @foreach (var category in categories)
+        {
+            <option value="@category.MaDanhMuc">@category.TenDanhMuc</option>
+        }
+    </select>
+    <select class="form-select" style="max-width: 220px" data-status-filter=".js-food-row">
+        <option value="">Tất cả trạng thái</option>
+        <option value="DangKinhDoanh">Đang kinh doanh</option>
+        <option value="HetMon">Hết món</option>
+        <option value="An">Ẩn</option>
+    </select>
+</div>
+
+<div class="table-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-bowl-food"></i>
+                <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                <p>Thêm món đầu tiên để hoàn thiện thực đơn của nhà hàng.</p>
+                <a asp-action="Create" class="btn btn-primary-custom">Thêm Món</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Món ăn</th>
+                        <th>Danh mục</th>
+                        <th>Đơn vị</th>
+                        <th>Đơn giá</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        string statusClass = item.TrangThai switch
+                        {
+                            "DangKinhDoanh" => "active",
+                            "HetMon" => "soldout",
+                            "An" => "hidden",
+                            _ => "hidden"
+                        };
+
+                        string tenTrangThai = item.TrangThai switch
+                        {
+                            "DangKinhDoanh" => "Đang kinh doanh",
+                            "HetMon" => "Hết món",
+                            "An" => "Ẩn",
+                            _ => item.TrangThai
+                        };
+
+                        var tenDanhMuc = item.MaDanhMucNavigation?.TenDanhMuc ?? item.MaDanhMuc;
+
+                        <tr class="js-food-row"
+                            data-status="@item.TrangThai"
+                            data-category="@item.MaDanhMuc"
+                            data-search="@($"{item.MaMon} {item.TenMon} {tenDanhMuc} {tenTrangThai}")">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="food-thumb">
+                                        @if (!string.IsNullOrWhiteSpace(item.HinhAnh))
+                                        {
+                                            <img src="@item.HinhAnh" alt="@item.TenMon" onerror="this.remove();" />
+                                        }
+                                        <i class="fa-solid fa-bowl-rice"></i>
+                                    </span>
+                                    <div>
+                                        <strong>@item.TenMon</strong>
+                                        <div class="text-muted small">@item.MaMon</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@tenDanhMuc</td>
+                            <td>@item.DonViTinh</td>
+                            <td class="price-text">@item.DonGia.ToString("N0") VNĐ</td>
+                            <td><span class="status-badge status-badge--@statusClass">@tenTrangThai</span></td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@item.MaMon" class="btn btn-warning btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-title="Sửa món">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("categoryFilter")?.addEventListener("change", function () {
+            const value = this.value;
+            document.querySelectorAll(".js-food-row").forEach(function (row) {
+                row.hidden = value.length > 0 && row.getAttribute("data-category") !== value;
+            });
+        });
+    </script>
+}

@@ -1,0 +1,136 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var hoTen = Context.Session.GetString("HoTen") ?? "Khách";
+    var maVaiTro = Context.Session.GetString("MaVaiTro") ?? "";
+    var vaiTro = maVaiTro switch
+    {
+        "QL" => "Quản lý",
+        "NV" => "Nhân viên phục vụ",
+        _ => "Chưa đăng nhập"
+    };
+    var initials = !string.IsNullOrWhiteSpace(hoTen) ? hoTen.Trim().Substring(0, 1).ToUpper() : "T";
+
+    string Active(string controller, string? action = null)
+    {
+        if (currentController != controller)
+        {
+            return "";
+        }
+
+        if (!string.IsNullOrEmpty(action) && currentAction != action)
+        {
+            return "";
+        }
+
+        return "active";
+    }
+}
+
+<aside class="app-sidebar no-print" id="appSidebar">
+    <a class="sidebar__brand" asp-controller="QuanLy" asp-action="Index">
+        <span class="sidebar__brand-icon">
+            <i class="fa-solid fa-utensils"></i>
+        </span>
+        <span class="sidebar__brand-copy">
+            <span class="sidebar__brand-name">Nhà Hàng Thanh Thảo</span>
+            <span class="sidebar__brand-subtitle">Hệ thống quản lý</span>
+        </span>
+    </a>
+
+    <nav class="sidebar__nav" aria-label="Menu chính">
+        @if (maVaiTro == "QL")
+        {
+            <div class="sidebar__section">
+                <div class="sidebar__label">Tổng quan</div>
+                <a class="sidebar__link @Active("QuanLy")" asp-controller="QuanLy" asp-action="Index">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="sidebar__section">
+                <div class="sidebar__label">Quản lý</div>
+                <a class="sidebar__link @Active("BanChoi")" asp-controller="BanChoi" asp-action="Index">
+                    <i class="fa-solid fa-chair"></i>
+                    <span>Bàn / Chòi</span>
+                </a>
+                <a class="sidebar__link @Active("DanhMucMon")" asp-controller="DanhMucMon" asp-action="Index">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Danh mục món</span>
+                </a>
+                <a class="sidebar__link @Active("MonAn")" asp-controller="MonAn" asp-action="Index">
+                    <i class="fa-solid fa-bowl-food"></i>
+                    <span>Món ăn</span>
+                </a>
+                <a class="sidebar__link @Active("DonDatBan")" asp-controller="DonDatBan" asp-action="Index">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Đặt bàn</span>
+                </a>
+                <a class="sidebar__link @Active("NguoiDung")" asp-controller="NguoiDung" asp-action="Index">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Tài khoản nhân viên</span>
+                </a>
+            </div>
+
+            <div class="sidebar__section">
+                <div class="sidebar__label">Phục vụ</div>
+                <a class="sidebar__link @Active("PhucVu")" asp-controller="PhucVu" asp-action="Index">
+                    <i class="fa-solid fa-bell-concierge"></i>
+                    <span>Sơ đồ phục vụ</span>
+                </a>
+                <a class="sidebar__link @Active("DonGoiMon")" asp-controller="DonGoiMon" asp-action="Index">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>Đơn gọi món</span>
+                </a>
+            </div>
+
+            <div class="sidebar__section">
+                <div class="sidebar__label">Tài chính</div>
+                <a class="sidebar__link @Active("HoaDon")" asp-controller="HoaDon" asp-action="Index">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Hóa đơn</span>
+                </a>
+                <a class="sidebar__link @Active("BaoCao")" asp-controller="BaoCao" asp-action="DoanhThu">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Báo cáo doanh thu</span>
+                </a>
+            </div>
+        }
+        else if (maVaiTro == "NV")
+        {
+            <div class="sidebar__section">
+                <div class="sidebar__label">Phục vụ</div>
+                <a class="sidebar__link @Active("PhucVu")" asp-controller="PhucVu" asp-action="Index">
+                    <i class="fa-solid fa-bell-concierge"></i>
+                    <span>Sơ đồ phục vụ</span>
+                </a>
+                <a class="sidebar__link @Active("DonGoiMon")" asp-controller="DonGoiMon" asp-action="Index">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>Đơn gọi món</span>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="sidebar__section">
+                <div class="sidebar__label">Truy cập</div>
+                <a class="sidebar__link @Active("Account", "Login")" asp-controller="Account" asp-action="Login">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Đăng nhập</span>
+                </a>
+            </div>
+        }
+    </nav>
+
+    <div class="sidebar__user">
+        <span class="sidebar__avatar">@initials</span>
+        <span class="sidebar__user-details">
+            <span class="sidebar__user-name">@hoTen</span>
+            <span class="sidebar__user-role">@vaiTro</span>
+        </span>
+        <a class="sidebar__logout" asp-controller="Account" asp-action="Logout" data-bs-toggle="tooltip" data-bs-title="Đăng xuất">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </a>
+    </div>
+</aside>

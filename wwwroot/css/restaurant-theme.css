@@ -1,0 +1,349 @@
+:root {
+  --primary: #8B4513;
+  --primary-dark: #5C2D0A;
+  --primary-light: #C4783A;
+  --primary-rgb: 139, 69, 19;
+  --primary-dark-rgb: 92, 45, 10;
+  --primary-light-rgb: 196, 120, 58;
+
+  --accent: #D4A017;
+  --accent-light: #F5D76E;
+  --accent-rgb: 212, 160, 23;
+
+  --bg-main: #FDF6EC;
+  --bg-sidebar: #2C1A0E;
+  --bg-card: #FFFFFF;
+  --bg-table-head: #F0E6D3;
+
+  --status-empty: #27AE60;
+  --status-booked: #F39C12;
+  --status-serving: #E74C3C;
+  --status-stopped: #95A5A6;
+  --status-empty-rgb: 39, 174, 96;
+  --status-booked-rgb: 243, 156, 18;
+  --status-serving-rgb: 231, 76, 60;
+  --status-stopped-rgb: 149, 165, 166;
+
+  --food-active: #27AE60;
+  --food-inactive: #E74C3C;
+
+  --text-main: #2C1A0E;
+  --text-sub: #6D4C41;
+  --text-light: #A0896A;
+  --text-white: #FFFFFF;
+  --muted-surface: #FFF9F0;
+  --info-soft: #EAF5F1;
+
+  --border: #E8D5BC;
+  --shadow-sm: 0 2px 8px rgba(139, 69, 19, 0.08);
+  --shadow-md: 0 4px 16px rgba(139, 69, 19, 0.14);
+  --shadow-lg: 0 8px 32px rgba(139, 69, 19, 0.18);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Be Vietnam Pro", sans-serif;
+}
+
+html {
+  min-height: 100%;
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--text-main);
+  background: var(--bg-main);
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+.brand-text,
+.page-title {
+  color: var(--text-main);
+  font-family: var(--font-heading);
+  letter-spacing: 0;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+img {
+  max-width: 100%;
+}
+
+::selection {
+  color: var(--text-white);
+  background: var(--primary);
+}
+
+.form-control,
+.form-select,
+.btn,
+.nav-link,
+.dropdown-item,
+.page-link,
+.card,
+.table,
+.badge,
+.alert {
+  transition: all 0.2s ease;
+}
+
+.form-control,
+.form-select {
+  color: var(--text-main);
+  border-color: var(--border);
+  border-radius: var(--radius-md);
+  min-height: 44px;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+}
+
+.form-label {
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.text-danger,
+.field-validation-error,
+.validation-summary-errors {
+  color: var(--status-serving) !important;
+  font-size: 0.875rem;
+}
+
+.btn-primary,
+.btn-primary-custom {
+  color: var(--text-white) !important;
+  background: var(--primary);
+  border-color: var(--primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary-custom:hover,
+.btn-primary-custom:focus {
+  color: var(--text-white) !important;
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary.active {
+  color: var(--text-white);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-secondary {
+  color: var(--text-sub);
+  background: var(--bg-card);
+  border-color: var(--border);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  color: var(--primary-dark);
+  background: var(--muted-surface);
+  border-color: var(--primary-light);
+}
+
+.btn-success {
+  background: var(--status-empty);
+  border-color: var(--status-empty);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.btn-warning {
+  color: var(--text-main);
+  background: var(--accent-light);
+  border-color: var(--accent);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.btn-info {
+  color: var(--text-white);
+  background: var(--primary-light);
+  border-color: var(--primary-light);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.btn-danger {
+  background: var(--status-serving);
+  border-color: var(--status-serving);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.alert {
+  border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.alert-success {
+  color: var(--status-empty);
+  background: rgba(var(--status-empty-rgb), 0.12);
+}
+
+.alert-danger {
+  color: var(--status-serving);
+  background: rgba(var(--status-serving-rgb), 0.12);
+}
+
+.alert-warning {
+  color: var(--text-main);
+  background: rgba(var(--status-booked-rgb), 0.14);
+}
+
+.alert-info {
+  color: var(--text-sub);
+  background: var(--info-soft);
+}
+
+.table {
+  color: var(--text-main);
+  margin-bottom: 0;
+}
+
+.table thead th {
+  color: var(--text-sub);
+  background: var(--bg-table-head);
+  border-bottom: 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  border-color: var(--border);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  --bs-table-accent-bg: rgba(var(--primary-rgb), 0.025);
+}
+
+.table-hover tbody tr:hover,
+.table tbody tr:hover {
+  background: rgba(var(--primary-rgb), 0.045);
+}
+
+.dropdown-menu {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.dropdown-item {
+  color: var(--text-sub);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  color: var(--primary-dark);
+  background: var(--muted-surface);
+}
+
+.pagination .page-link {
+  color: var(--primary);
+  border-color: var(--border);
+}
+
+.pagination .active .page-link,
+.page-item.active .page-link {
+  color: var(--text-white);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.auth-body,
+.qr-body {
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
+@media print {
+  body {
+    background: var(--bg-card) !important;
+  }
+
+  .app-sidebar,
+  .app-topbar,
+  .app-footer,
+  .sidebar-backdrop,
+  .no-print,
+  .btn,
+  form.no-print {
+    display: none !important;
+  }
+
+  .app-main {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .app-content {
+    padding: 0 !important;
+  }
+
+  .print-surface,
+  .invoice-paper,
+  .kitchen-ticket,
+  .qr-print-card {
+    box-shadow: none !important;
+    border-color: #000 !important;
+  }
+}

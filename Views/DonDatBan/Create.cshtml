@@ -1,0 +1,116 @@
+@model NhaHangThanhThao.ViewModels.DonDatBanCreateViewModel
+
+@{
+    ViewData["Title"] = "Lập đơn đặt bàn";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-regular fa-calendar-plus"></i> Đặt bàn</span>
+        <h1 class="page-title">Lập đơn đặt bàn</h1>
+        <p class="page-subtitle">Nhập thông tin khách, thời gian đến, bàn/chòi và tiền cọc để giữ chỗ.</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" class="form-shell">
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="MaDonDatBan" class="form-label">Mã đơn đặt bàn</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <input asp-for="MaDonDatBan" class="form-control" value="Tự động tạo khi lưu" readonly />
+                </div>
+                <div class="form-text">Mã đơn được sinh tự động để tránh trùng lặp.</div>
+            </div>
+
+            <div>
+                <label asp-for="TenKhachHang" class="form-label">Tên khách hàng</label>
+                <div class="input-icon">
+                    <i class="fa-regular fa-user"></i>
+                    <input asp-for="TenKhachHang" class="form-control" />
+                </div>
+                <span asp-validation-for="TenKhachHang" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-phone"></i>
+                    <input asp-for="SoDienThoai" class="form-control" />
+                </div>
+                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="ThoiGianDen" class="form-label">Thời gian đến</label>
+                <div class="input-icon">
+                    <i class="fa-regular fa-clock"></i>
+                    <input asp-for="ThoiGianDen" type="datetime-local" class="form-control" />
+                </div>
+                <span asp-validation-for="ThoiGianDen" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="SoLuongKhach" class="form-label">Số lượng khách</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-users"></i>
+                    <input asp-for="SoLuongKhach" type="number" class="form-control" min="1" />
+                </div>
+                <span asp-validation-for="SoLuongKhach" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="MaBan" class="form-label">Bàn/chòi</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-chair"></i>
+                    <select asp-for="MaBan" asp-items="ViewBag.BanChois" class="form-select">
+                        <option value="">-- Chọn bàn/chòi --</option>
+                    </select>
+                </div>
+                <div class="form-text">Hệ thống sẽ báo lỗi nếu bàn/chòi đã có đơn đặt trong ngày đã chọn.</div>
+                <span asp-validation-for="MaBan" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TienCoc" class="form-label">Tiền cọc</label>
+                <div class="input-group">
+                    <span class="input-group-text money-prefix">₫</span>
+                    <input asp-for="TienCoc" type="number" class="form-control" min="0" />
+                </div>
+                <span asp-validation-for="TienCoc" class="text-danger"></span>
+            </div>
+
+            <div class="span-2">
+                <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+                <textarea asp-for="GhiChu" class="form-control" rows="4" placeholder="Ví dụ: khách cần ghế trẻ em, ưu tiên khu sân vườn..."></textarea>
+                <span asp-validation-for="GhiChu" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu đơn
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-user-check"></i> Quy trình</span>
+        <ul class="summary-list">
+            <li><span>Nhận thông tin khách</span><strong>1</strong></li>
+            <li><span>Chọn bàn/chòi phù hợp</span><strong>2</strong></li>
+            <li><span>Hệ thống kiểm tra trùng lịch</span><strong>3</strong></li>
+            <li><span>Khi khách đến, giữ bàn</span><strong>4</strong></li>
+        </ul>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

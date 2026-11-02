@@ -1,0 +1,187 @@
+@model NhaHangThanhThao.ViewModels.KhachGoiMonViewModel
+
+@{
+    ViewData["Title"] = "Gọi món QR";
+    var tongTienDaGoi = Model.DanhSachMonDaGoi.Sum(x => x.ThanhTien);
+
+    string TenTrangThaiMon(string trangThai)
+    {
+        return trangThai switch
+        {
+            "Moi" => "Mới gửi",
+            "DangCheBien" => "Đang chế biến",
+            "DaPhucVu" => "Đã phục vụ",
+            "DaHuy" => "Đã hủy",
+            "TraMon" => "Trả món",
+            _ => trangThai
+        };
+    }
+
+    string LopTrangThaiMon(string trangThai)
+    {
+        return trangThai switch
+        {
+            "Moi" => "status-badge--new",
+            "DangCheBien" => "status-badge--pending",
+            "DaPhucVu" => "status-badge--paid",
+            "DaHuy" => "status-badge--cancelled",
+            "TraMon" => "status-badge--returned",
+            _ => "status-badge--active"
+        };
+    }
+}
+
+<div class="qr-menu">
+    <header class="qr-menu__header">
+        <div class="qr-menu__brand">
+            <span class="qr-menu__logo"><i class="fa-solid fa-utensils"></i></span>
+            <div>
+                <div class="qr-menu__title">Nhà Hàng Thanh Thảo</div>
+                <div class="qr-menu__table">@Model.TenBan · Mã bàn @Model.MaBan</div>
+            </div>
+        </div>
+    </header>
+
+    @if (TempData["ThongBao"] != null)
+    {
+        <div class="px-3 pt-3">
+            <div class="alert alert-success d-flex align-items-center gap-2 mb-0">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>@TempData["ThongBao"]</span>
+            </div>
+        </div>
+    }
+
+    @if (Model.DanhSachMonDaGoi.Any())
+    {
+        <section class="qr-order-summary">
+            <div class="qr-order-summary__header">
+                <div>
+                    <span class="page-kicker"><i class="fa-solid fa-receipt"></i> Đơn hiện tại</span>
+                    <h2 class="qr-order-summary__title">Món đã gọi</h2>
+                </div>
+                <strong class="price-text">@tongTienDaGoi.ToString("N0") VNĐ</strong>
+            </div>
+
+            <div class="qr-order-summary__list">
+                @foreach (var monDaGoi in Model.DanhSachMonDaGoi)
+                {
+                    <article class="qr-order-item">
+                        <div>
+                            <div class="qr-order-item__name">@monDaGoi.TenMon</div>
+                            <div class="text-muted small">
+                                SL @monDaGoi.SoLuong · @monDaGoi.DonGia.ToString("N0") VNĐ
+                                @if (!string.IsNullOrWhiteSpace(monDaGoi.GhiChu))
+                                {
+                                    <span>· @monDaGoi.GhiChu</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="status-badge @LopTrangThaiMon(monDaGoi.TrangThai)">@TenTrangThaiMon(monDaGoi.TrangThai)</span>
+                            <div class="qr-order-item__total">@monDaGoi.ThanhTien.ToString("N0") VNĐ</div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+
+    <nav class="qr-menu__tabs" aria-label="Danh mục món">
+        <a asp-action="Menu"
+           asp-route-token="@Model.QRToken"
+           class="btn @(string.IsNullOrEmpty(Model.MaDanhMucDangChon) ? "btn-primary-custom" : "btn-outline-primary")">
+            Tất cả
+        </a>
+
+        @foreach (var danhMuc in Model.DanhSachDanhMuc)
+        {
+            <a asp-action="Menu"
+               asp-route-token="@Model.QRToken"
+               asp-route-maDanhMuc="@danhMuc.MaDanhMuc"
+               class="btn @(Model.MaDanhMucDangChon == danhMuc.MaDanhMuc ? "btn-primary-custom" : "btn-outline-primary")">
+                @danhMuc.TenDanhMuc
+            </a>
+        }
+    </nav>
+
+    <main class="qr-menu__content">
+        @if (!Model.DanhSachMon.Any())
+        {
+            <div class="content-card">
+                <div class="empty-state">
+                    <div>
+                        <i class="fa-solid fa-bowl-food"></i>
+                        <h1 class="empty-state__title">Chưa có món</h1>
+                        <p>Danh mục này hiện chưa có món đang bán.</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model.DanhSachMon)
+            {
+                <article class="qr-food-card">
+                    <div class="qr-food-card__image">
+                        @if (!string.IsNullOrWhiteSpace(item.HinhAnh))
+                        {
+                            <img src="@item.HinhAnh" alt="@item.TenMon" onerror="this.remove();" />
+                        }
+                        <i class="fa-solid fa-bowl-rice"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-start justify-content-between gap-2">
+                            <div>
+                                <h2 class="qr-food-card__title">@item.TenMon</h2>
+                                <div class="text-muted small">@item.TenDanhMuc · @item.DonViTinh</div>
+                            </div>
+                            <strong class="price-text">@item.DonGia.ToString("N0") VNĐ</strong>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(item.MoTa))
+                        {
+                            <p class="qr-food-card__desc">@item.MoTa</p>
+                        }
+                        else
+                        {
+                            <p class="qr-food-card__desc">Món đang phục vụ tại nhà hàng.</p>
+                        }
+
+                        <form asp-action="GoiMon" method="post" class="qr-food-card__form">
+                            <input type="hidden" name="qrToken" value="@Model.QRToken" />
+                            <input type="hidden" name="maMon" value="@item.MaMon" />
+
+                            <div class="qr-food-card__controls">
+                                <input name="soLuong"
+                                       type="number"
+                                       value="1"
+                                       min="1"
+                                       class="form-control"
+                                       aria-label="Số lượng" />
+                                <input name="ghiChu"
+                                       class="form-control"
+                                       placeholder="Ghi chú: ít cay, không hành..." />
+                                <button type="submit" class="btn btn-primary-custom">
+                                    <i class="fa-solid fa-plus me-1"></i>Gửi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </article>
+            }
+        }
+    </main>
+
+    <footer class="qr-menu__footer">
+        <div class="d-flex align-items-center justify-content-between gap-3">
+            <div>
+                <strong>@Model.DanhSachMon.Count món đang hiển thị</strong>
+                <div class="text-muted small">Chọn số lượng rồi gửi yêu cầu tại từng món.</div>
+            </div>
+            <a href="#top" class="btn btn-accent btn-icon" data-bs-toggle="tooltip" data-bs-title="Lên đầu trang">
+                <i class="fa-solid fa-arrow-up"></i>
+            </a>
+        </div>
+    </footer>
+</div>

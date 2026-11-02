@@ -1,0 +1,69 @@
+@model NhaHangThanhThao.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="auth-layout">
+    <section class="auth-brand">
+        <div class="auth-brand__content">
+            <div class="auth-brand__icon">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+            <div class="auth-brand__title">Nhà Hàng Thanh Thảo</div>
+            <p class="auth-brand__tagline">Quản lý chuyên nghiệp - Phục vụ tận tâm</p>
+            <div class="auth-brand__features" aria-label="Điểm nhấn thương hiệu">
+                <i class="fa-solid fa-location-dot"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-bell-concierge"></i>
+                <i class="fa-solid fa-bowl-rice"></i>
+            </div>
+        </div>
+    </section>
+
+    <section class="auth-form-panel">
+        <div class="auth-card">
+            <span class="page-kicker"><i class="fa-solid fa-shield-heart"></i> Nội bộ</span>
+            <h1 class="auth-card__title">Đăng Nhập Hệ Thống</h1>
+            <p class="auth-card__subtitle">Chào mừng quay lại, hãy đăng nhập để tiếp tục ca làm việc.</p>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>@ViewBag.Error</span>
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label asp-for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                    <div class="input-icon">
+                        <i class="fa-regular fa-user"></i>
+                        <input asp-for="TenDangNhap" class="form-control" autocomplete="username" placeholder="Nhập tên đăng nhập" />
+                    </div>
+                    <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="MatKhau" class="form-label">Mật khẩu</label>
+                    <div class="input-icon">
+                        <i class="fa-solid fa-lock"></i>
+                        <input asp-for="MatKhau" type="password" class="form-control" autocomplete="current-password" placeholder="Nhập mật khẩu" />
+                    </div>
+                    <span asp-validation-for="MatKhau" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary-custom w-100 py-3">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Đăng Nhập
+                </button>
+            </form>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

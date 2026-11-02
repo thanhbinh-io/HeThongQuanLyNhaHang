@@ -1,0 +1,92 @@
+@model IEnumerable<NhaHangThanhThao.ViewModels.HoaDonIndexViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý hóa đơn";
+    var total = Model.Count();
+    var revenue = Model.Sum(x => x.TongThanhToan);
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-receipt"></i> Hóa đơn</span>
+        <h1 class="page-title">Quản lý hóa đơn</h1>
+        <p class="page-subtitle">Tra cứu các hóa đơn đã thanh toán, giờ vào/ra và tổng tiền.</p>
+    </div>
+</div>
+
+<section class="stats-grid">
+    <div class="stat-card stat-card--gold">
+        <span class="stat-card__icon"><i class="fa-solid fa-receipt"></i></span>
+        <span><span class="stat-card__value">@total</span><span class="stat-card__label">Số hóa đơn</span></span>
+    </div>
+    <div class="stat-card stat-card--green">
+        <span class="stat-card__icon"><i class="fa-solid fa-coins"></i></span>
+        <span><span class="stat-card__value">@revenue.ToString("N0")</span><span class="stat-card__label">Tổng thanh toán</span></span>
+    </div>
+</section>
+
+<div class="toolbar">
+    <div class="input-icon flex-grow-1">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" class="form-control" placeholder="Tìm theo mã hóa đơn, mã đơn hoặc bàn/chòi" data-filter-target=".js-invoice-row" />
+    </div>
+    <a asp-controller="BaoCao" asp-action="DoanhThu" class="btn btn-outline-primary">
+        <i class="fa-solid fa-chart-column me-2"></i>Báo cáo doanh thu
+    </a>
+</div>
+
+<div class="table-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-receipt"></i>
+                <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                <p>Hóa đơn sẽ xuất hiện sau khi xác nhận thanh toán.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Mã hóa đơn</th>
+                        <th>Bàn/chòi</th>
+                        <th>Giờ vào</th>
+                        <th>Giờ ra</th>
+                        <th>Tiền món</th>
+                        <th>Phụ thu</th>
+                        <th>Cọc trừ</th>
+                        <th>Tổng thanh toán</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="js-invoice-row" data-search="@($"{item.MaHoaDon} {item.MaDonGoiMon} {item.TenBan}")">
+                            <td>
+                                <strong>@item.MaHoaDon</strong>
+                                <div class="text-muted small">@item.MaDonGoiMon</div>
+                            </td>
+                            <td>@item.TenBan</td>
+                            <td>@item.GioVao.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.GioRa.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.TongTienMon.ToString("N0") VNĐ</td>
+                            <td>@item.PhuThu.ToString("N0") VNĐ</td>
+                            <td>@item.TienCocKhauTru.ToString("N0") VNĐ</td>
+                            <td class="price-text">@item.TongThanhToan.ToString("N0") VNĐ</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.MaHoaDon" class="btn btn-info btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-title="Chi tiết">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

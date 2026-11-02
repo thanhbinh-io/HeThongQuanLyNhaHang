@@ -1,0 +1,117 @@
+@model NhaHangThanhThao.Models.MonAn
+
+@{
+    ViewData["Title"] = "Thêm món ăn";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-plus"></i> Món mới</span>
+        <h1 class="page-title">Thêm món ăn</h1>
+        <p class="page-subtitle">Khai báo món mới với danh mục, đơn vị tính, giá bán và trạng thái hiển thị.</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="form-shell">
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="MaMon" class="form-label">Mã món</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <input asp-for="MaMon" class="form-control" placeholder="Ví dụ: HS001" />
+                </div>
+                <span asp-validation-for="MaMon" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TenMon" class="form-label">Tên món</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-bowl-food"></i>
+                    <input asp-for="TenMon" class="form-control" />
+                </div>
+                <span asp-validation-for="TenMon" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="MaDanhMuc" class="form-label">Danh mục</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <select asp-for="MaDanhMuc" asp-items="ViewBag.DanhMucMons" class="form-select">
+                        <option value="">-- Chọn danh mục --</option>
+                    </select>
+                </div>
+                <span asp-validation-for="MaDanhMuc" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="DonViTinh" class="form-label">Đơn vị tính</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <input asp-for="DonViTinh" class="form-control" placeholder="Ví dụ: Phần, Nồi, Chai" />
+                </div>
+                <span asp-validation-for="DonViTinh" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="DonGia" class="form-label">Đơn giá</label>
+                <div class="input-group">
+                    <span class="input-group-text money-prefix">₫</span>
+                    <input asp-for="DonGia" type="number" class="form-control" min="0" />
+                </div>
+                <span asp-validation-for="DonGia" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-signal"></i>
+                    <select asp-for="TrangThai" class="form-select">
+                        <option value="DangKinhDoanh">Đang kinh doanh</option>
+                        <option value="HetMon">Hết món</option>
+                        <option value="An">Ẩn</option>
+                    </select>
+                </div>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+
+            <div class="span-2">
+                <label asp-for="HinhAnh" class="form-label">Hình ảnh</label>
+                <input name="hinhAnhFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                <div class="form-text">Chọn ảnh món nếu có. Nếu bỏ trống, hệ thống tự dùng ảnh mặc định theo danh mục.</div>
+                <span asp-validation-for="HinhAnh" class="text-danger"></span>
+            </div>
+
+            <div class="span-2">
+                <label asp-for="MoTa" class="form-label">Mô tả</label>
+                <textarea asp-for="MoTa" class="form-control" rows="4" placeholder="Mô tả ngắn giúp nhân viên và khách nhận diện món nhanh hơn."></textarea>
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-wand-magic-sparkles"></i> Trình bày</span>
+        <ul class="summary-list">
+            <li><span>Ảnh món</span><strong>Vuông, rõ món</strong></li>
+            <li><span>Tên món</span><strong>Dễ gọi</strong></li>
+            <li><span>Giá bán</span><strong>Không âm</strong></li>
+            <li><span>Trạng thái</span><strong>Theo ca bếp</strong></li>
+        </ul>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

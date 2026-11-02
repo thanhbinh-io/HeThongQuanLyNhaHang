@@ -1,0 +1,174 @@
+@model NhaHangThanhThao.ViewModels.DonGoiMonDetailsViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết đơn gọi món";
+    var soMonMoi = Model.ChiTietMons.Count(x => x.TrangThai == "Moi");
+    var laPhieuBoSung = Model.ChiTietMons.Any(x => x.TrangThai == "DangCheBien" || x.TrangThai == "DaPhucVu");
+
+    string orderStatusClass = Model.TrangThai switch
+    {
+        "DangPhucVu" => "serving",
+        "DaThanhToan" => "paid",
+        "DaHuy" => "cancelled",
+        _ => "stopped"
+    };
+
+    string orderStatusName = Model.TrangThai switch
+    {
+        "DangPhucVu" => "Đang phục vụ",
+        "DaThanhToan" => "Đã thanh toán",
+        "DaHuy" => "Đã hủy",
+        _ => Model.TrangThai
+    };
+
+    string TenTrangThaiMon(string trangThai)
+    {
+        return trangThai switch
+        {
+            "Moi" => "Chờ in bếp",
+            "DangCheBien" => "Đang chế biến",
+            "DaPhucVu" => "Đã phục vụ",
+            "DaHuy" => "Đã hủy",
+            "TraMon" => "Trả món",
+            _ => trangThai
+        };
+    }
+
+    string LopTrangThaiMon(string trangThai)
+    {
+        return trangThai switch
+        {
+            "Moi" => "new",
+            "DangCheBien" => "pending",
+            "DaPhucVu" => "paid",
+            "DaHuy" => "cancelled",
+            "TraMon" => "returned",
+            _ => "stopped"
+        };
+    }
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-receipt"></i> Chi tiết đơn</span>
+        <h1 class="page-title">@Model.TenBan</h1>
+        <p class="page-subtitle">Mã đơn @Model.MaDonGoiMon, tạo lúc @Model.ThoiGianTao.ToString("dd/MM/yyyy HH:mm").</p>
+    </div>
+    <div class="page-actions">
+        <span class="status-badge status-badge--@orderStatusClass">@orderStatusName</span>
+        @if (Model.TrangThai == "DangPhucVu")
+        {
+            @if (soMonMoi > 0)
+            {
+                <a asp-action="PhieuBep" asp-route-id="@Model.MaDonGoiMon" class="btn btn-warning">
+                    <i class="fa-solid fa-print me-2"></i>@(laPhieuBoSung ? "In phiếu bổ sung" : "In phiếu bếp")
+                </a>
+            }
+            <a asp-action="AddMon" asp-route-id="@Model.MaDonGoiMon" class="btn btn-primary-custom">
+                <i class="fa-solid fa-plus me-2"></i>Thêm món
+            </a>
+            <a asp-controller="HoaDon" asp-action="TamTinh" asp-route-id="@Model.MaDonGoiMon" class="btn btn-accent">
+                <i class="fa-solid fa-cash-register me-2"></i>Thanh toán
+            </a>
+        }
+    </div>
+</div>
+
+@if (Model.TrangThai == "DangPhucVu" && soMonMoi == 0 && Model.ChiTietMons.Any())
+{
+    <div class="alert alert-info">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        Hiện không có món mới chờ in bếp. Khi khách gọi thêm món, nút in phiếu bổ sung sẽ xuất hiện.
+    </div>
+}
+
+<section class="payment-grid">
+    <div class="table-card">
+        @if (!Model.ChiTietMons.Any())
+        {
+            <div class="empty-state">
+                <div>
+                    <i class="fa-solid fa-bowl-food"></i>
+                    <h2 class="empty-state__title">Chưa có món</h2>
+                    <p>Thêm món để bắt đầu phục vụ bàn này.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Món ăn</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Ghi chú</th>
+                            <th class="text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ChiTietMons)
+                        {
+                            var tenTrangThai = TenTrangThaiMon(item.TrangThai);
+                            var statusClass = LopTrangThaiMon(item.TrangThai);
+
+                            <tr>
+                                <td><strong>@item.TenMon</strong></td>
+                                <td>@item.SoLuong</td>
+                                <td>@item.DonGia.ToString("N0") VNĐ</td>
+                                <td class="price-text">@item.ThanhTien.ToString("N0") VNĐ</td>
+                                <td><span class="status-badge status-badge--@statusClass">@tenTrangThai</span></td>
+                                <td>@item.GhiChu</td>
+                                <td class="text-end">
+                                    @if (Model.TrangThai == "DangPhucVu" && item.TrangThai == "Moi")
+                                    {
+                                        <form asp-action="CapNhatTrangThaiMon" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@item.MaChiTietDonGoiMon" />
+                                            <input type="hidden" name="trangThai" value="DaHuy" />
+                                            <button type="submit" class="btn btn-danger-soft btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-title="Hủy món">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </form>
+
+                                        <form asp-action="CapNhatTrangThaiMon" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@item.MaChiTietDonGoiMon" />
+                                            <input type="hidden" name="trangThai" value="TraMon" />
+                                            <button type="submit" class="btn btn-secondary btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-title="Trả món">
+                                                <i class="fa-solid fa-rotate-left"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Không thao tác</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-calculator"></i> Phiếu gọi món</span>
+        <ul class="summary-list mt-2">
+            <li><span>Mã đơn</span><strong>@Model.MaDonGoiMon</strong></li>
+            <li><span>Bàn/chòi</span><strong>@Model.TenBan</strong></li>
+            <li><span>Số dòng món</span><strong>@Model.ChiTietMons.Count</strong></li>
+            <li><span>Món chờ in bếp</span><strong>@soMonMoi</strong></li>
+            <li><span>Trạng thái</span><strong>@orderStatusName</strong></li>
+        </ul>
+        <div class="payment-total mt-4">
+            <span class="payment-total__label">Tổng tiền tạm tính</span>
+            <span class="payment-total__value">@Model.TongTien.ToString("N0") VNĐ</span>
+        </div>
+        <div class="action-row mt-4">
+            <a asp-action="Index" class="btn btn-secondary w-100">Quay lại</a>
+        </div>
+    </aside>
+</section>

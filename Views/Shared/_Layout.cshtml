@@ -1,0 +1,104 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var title = ViewData["Title"]?.ToString() ?? "NhaHangThanhThao";
+    var hoTen = Context.Session.GetString("HoTen") ?? "Khách";
+    var maVaiTro = Context.Session.GetString("MaVaiTro") ?? "";
+    var vaiTro = maVaiTro switch
+    {
+        "QL" => "Quản lý",
+        "NV" => "Nhân viên",
+        _ => "Chưa đăng nhập"
+    };
+    var initials = !string.IsNullOrWhiteSpace(hoTen) ? hoTen.Trim().Substring(0, 1).ToUpper() : "T";
+    var isLoginPage = currentController == "Account" && currentAction == "Login";
+    var isQrPage = currentController == "KhachGoiMon";
+    var useStandaloneLayout = isLoginPage || isQrPage;
+    var bodyClass = isQrPage ? "qr-body" : (isLoginPage ? "auth-body" : "app-shell");
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@title - Nhà Hàng Thanh Thảo</title>
+    <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/restaurant-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/NhaHangThanhThao.styles.css" asp-append-version="true" />
+</head>
+<body class="@bodyClass">
+    @if (useStandaloneLayout)
+    {
+        @RenderBody()
+    }
+    else
+    {
+        <partial name="_Sidebar" />
+
+        <div class="app-main">
+            <header class="app-topbar no-print">
+                <div class="topbar__left">
+                    <button class="topbar__toggle" id="sidebarToggle" type="button" aria-label="Mở menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="topbar__crumb">
+                        <span class="topbar__eyebrow">Nhà Hàng Thanh Thảo</span>
+                        <span class="topbar__title">@title</span>
+                    </div>
+                </div>
+
+                <div class="topbar__right">
+                    <div class="topbar__clock" id="topbarClock"></div>
+                    <button class="topbar__icon-button" type="button" data-bs-toggle="tooltip" data-bs-title="Thông báo">
+                        <i class="fa-regular fa-bell"></i>
+                    </button>
+
+                    <div class="dropdown">
+                        <button class="topbar__user border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="topbar__avatar">@initials</span>
+                            <span class="topbar__user-meta">
+                                <span class="topbar__user-name">@hoTen</span>
+                                <span class="topbar__user-role">@vaiTro</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down small text-muted"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item disabled"><i class="fa-solid fa-key me-2"></i>Đổi mật khẩu</span></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <main class="app-content" role="main">
+                @RenderBody()
+            </main>
+
+            <footer class="app-footer no-print">
+                <span>&copy; 2026 Nhà Hàng Thanh Thảo</span>
+            </footer>
+        </div>
+
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,111 @@
+@model NhaHangThanhThao.Models.BanChoi
+
+@{
+    ViewData["Title"] = "Sửa bàn/chòi";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-regular fa-pen-to-square"></i> Cập nhật không gian</span>
+        <h1 class="page-title">Sửa bàn/chòi</h1>
+        <p class="page-subtitle">Điều chỉnh tên, khu vực, sức chứa, trạng thái và token QR.</p>
+    </div>
+</div>
+
+<form asp-action="Edit" asp-route-id="@Model.MaBan" method="post" class="form-shell">
+    <input type="hidden" asp-for="MaBan" />
+
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="MaBan" class="form-label">Mã bàn/chòi</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <input asp-for="MaBan" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="TenBan" class="form-label">Tên bàn/chòi</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-chair"></i>
+                    <input asp-for="TenBan" class="form-control" />
+                </div>
+                <span asp-validation-for="TenBan" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="SucChua" class="form-label">Sức chứa</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-users"></i>
+                    <input asp-for="SucChua" type="number" class="form-control" min="1" />
+                </div>
+                <span asp-validation-for="SucChua" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="KhuVuc" class="form-label">Khu vực</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <select asp-for="KhuVuc" class="form-select">
+                        <option value="Khu chòi gỗ">Khu chòi gỗ</option>
+                        <option value="Khu sân vườn">Khu sân vườn</option>
+                        <option value="Khu câu cá">Khu câu cá</option>
+                    </select>
+                </div>
+                <span asp-validation-for="KhuVuc" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-signal"></i>
+                    <select asp-for="TrangThai" class="form-select">
+                        <option value="Trong">Trống</option>
+                        <option value="DaDatTruoc">Đã đặt trước</option>
+                        <option value="DangPhucVu">Đang phục vụ</option>
+                        <option value="NgungSuDung">Ngừng sử dụng</option>
+                    </select>
+                </div>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="Qrtoken" class="form-label">QR Token</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <input asp-for="Qrtoken" class="form-control" />
+                </div>
+                <span asp-validation-for="Qrtoken" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu thay đổi
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            <a asp-action="InQr" asp-route-id="@Model.MaBan" class="btn btn-outline-primary ms-auto">
+                <i class="fa-solid fa-qrcode me-2"></i>In QR
+            </a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-bolt"></i> Trạng thái</span>
+        <ul class="summary-list">
+            <li><span>Trống</span><strong>Sẵn sàng nhận khách</strong></li>
+            <li><span>Đã đặt trước</span><strong>Giữ bàn</strong></li>
+            <li><span>Đang phục vụ</span><strong>Có khách</strong></li>
+            <li><span>Ngừng sử dụng</span><strong>Ẩn khỏi vận hành</strong></li>
+        </ul>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,197 @@
+@model NhaHangThanhThao.ViewModels.BaoCaoDoanhThuViewModel
+
+@{
+    ViewData["Title"] = "Báo cáo doanh thu";
+    var average = Model.TongSoHoaDon > 0 ? Model.TongDoanhThu / Model.TongSoHoaDon : 0;
+    var highest = Model.DanhSachHoaDon.Any() ? Model.DanhSachHoaDon.Max(x => x.TongThanhToan) : 0;
+    var chartData = Model.DanhSachHoaDon
+        .GroupBy(x => x.GioRa.Date)
+        .OrderBy(x => x.Key)
+        .Select(x => new
+        {
+            Label = x.Key.ToString("dd/MM"),
+            Value = x.Sum(hd => hd.TongThanhToan)
+        })
+        .ToList();
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-chart-column"></i> Báo cáo</span>
+        <h1 class="page-title">Báo cáo doanh thu</h1>
+        <p class="page-subtitle">Lọc hóa đơn theo ngày, xem tổng doanh thu và biểu đồ doanh thu theo ngày.</p>
+    </div>
+    <div class="page-actions no-print">
+        <a asp-action="XuatExcel"
+           asp-route-tuNgay="@(Model.TuNgay.HasValue ? Model.TuNgay.Value.ToString("yyyy-MM-dd") : null)"
+           asp-route-denNgay="@(Model.DenNgay.HasValue ? Model.DenNgay.Value.ToString("yyyy-MM-dd") : null)"
+           class="btn btn-accent">
+            <i class="fa-solid fa-file-excel me-2"></i>Xuất Excel
+        </a>
+        <button type="button" onclick="window.print()" class="btn btn-outline-primary">
+            <i class="fa-solid fa-print me-2"></i>In báo cáo
+        </button>
+    </div>
+</div>
+
+<form asp-action="DoanhThu" method="get" class="toolbar no-print">
+    <div>
+        <label class="form-label">Từ ngày</label>
+        <input name="tuNgay" type="date" class="form-control"
+               value="@(Model.TuNgay.HasValue ? Model.TuNgay.Value.ToString("yyyy-MM-dd") : "")" />
+    </div>
+
+    <div>
+        <label class="form-label">Đến ngày</label>
+        <input name="denNgay" type="date" class="form-control"
+               value="@(Model.DenNgay.HasValue ? Model.DenNgay.Value.ToString("yyyy-MM-dd") : "")" />
+    </div>
+
+    <div class="align-self-end">
+        <button type="submit" class="btn btn-primary-custom">
+            <i class="fa-solid fa-filter me-2"></i>Lọc
+        </button>
+    </div>
+</form>
+
+<section class="stats-grid">
+    <div class="stat-card stat-card--gold">
+        <span class="stat-card__icon"><i class="fa-solid fa-receipt"></i></span>
+        <span><span class="stat-card__value">@Model.TongSoHoaDon</span><span class="stat-card__label">Tổng hóa đơn</span></span>
+    </div>
+    <div class="stat-card stat-card--green">
+        <span class="stat-card__icon"><i class="fa-solid fa-coins"></i></span>
+        <span><span class="stat-card__value">@Model.TongDoanhThu.ToString("N0")</span><span class="stat-card__label">Tổng doanh thu</span></span>
+    </div>
+    <div class="stat-card stat-card--orange">
+        <span class="stat-card__icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span><span class="stat-card__value">@average.ToString("N0")</span><span class="stat-card__label">Trung bình/HĐ</span></span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-card__icon"><i class="fa-solid fa-arrow-trend-up"></i></span>
+        <span><span class="stat-card__value">@highest.ToString("N0")</span><span class="stat-card__label">Cao nhất</span></span>
+    </div>
+</section>
+
+<section class="dashboard-grid">
+    <div class="content-card print-surface">
+        <div class="table-card__header px-0 pt-0">
+            <h2 class="table-card__title">Doanh thu theo ngày</h2>
+        </div>
+        @if (chartData.Any())
+        {
+            <canvas id="revenueChart" height="120"></canvas>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div>
+                    <i class="fa-solid fa-chart-column"></i>
+                    <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                    <p>Thử chọn khoảng ngày khác hoặc tạo hóa đơn thanh toán.</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-filter"></i> Khoảng lọc</span>
+        <ul class="summary-list mt-2">
+            <li><span>Từ ngày</span><strong>@(Model.TuNgay?.ToString("dd/MM/yyyy") ?? "Tất cả")</strong></li>
+            <li><span>Đến ngày</span><strong>@(Model.DenNgay?.ToString("dd/MM/yyyy") ?? "Tất cả")</strong></li>
+            <li><span>Số hóa đơn</span><strong>@Model.TongSoHoaDon</strong></li>
+        </ul>
+    </aside>
+</section>
+
+<div class="table-card mt-4 print-surface">
+    <div class="table-card__header">
+        <h2 class="table-card__title">Chi tiết hóa đơn</h2>
+        <span class="status-badge status-badge--paid">@Model.TongSoHoaDon hóa đơn</span>
+    </div>
+    @if (!Model.DanhSachHoaDon.Any())
+    {
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-receipt"></i>
+                <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                <p>Không có hóa đơn nào trong khoảng lọc hiện tại.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Mã hóa đơn</th>
+                        <th>Mã đơn</th>
+                        <th>Bàn/chòi</th>
+                        <th>Thời gian thanh toán</th>
+                        <th>Tiền món</th>
+                        <th>Phụ thu</th>
+                        <th>Cọc trừ</th>
+                        <th>Tổng thanh toán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DanhSachHoaDon)
+                    {
+                        <tr>
+                            <td><strong>@item.MaHoaDon</strong></td>
+                            <td>@item.MaDonGoiMon</td>
+                            <td>@item.TenBan</td>
+                            <td>@item.GioRa.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.TongTienMon.ToString("N0") VNĐ</td>
+                            <td>@item.PhuThu.ToString("N0") VNĐ</td>
+                            <td>@item.TienCocKhauTru.ToString("N0") VNĐ</td>
+                            <td class="price-text">@item.TongThanhToan.ToString("N0") VNĐ</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @if (chartData.Any())
+    {
+        <script>
+            const revenueLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(chartData.Select(x => x.Label)));
+            const revenueValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(chartData.Select(x => x.Value)));
+            const ctx = document.getElementById("revenueChart");
+            if (ctx && window.Chart) {
+                const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 260);
+                gradient.addColorStop(0, "rgba(139, 69, 19, 0.9)");
+                gradient.addColorStop(1, "rgba(212, 160, 23, 0.45)");
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: revenueLabels,
+                        datasets: [{
+                            label: "Doanh thu",
+                            data: revenueValues,
+                            backgroundColor: gradient,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: value => Number(value).toLocaleString("vi-VN")
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+    }
+}

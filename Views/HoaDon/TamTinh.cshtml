@@ -1,0 +1,110 @@
+@model NhaHangThanhThao.ViewModels.PhieuTamTinhViewModel
+
+@{
+    ViewData["Title"] = "Phiếu tạm tính";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-cash-register"></i> Thanh toán</span>
+        <h1 class="page-title">Phiếu tạm tính</h1>
+        <p class="page-subtitle">Kiểm tra món, số lượng, phụ thu và tiền cọc trước khi tạo hóa đơn chính thức.</p>
+    </div>
+    <div class="page-actions no-print">
+        <button type="button" onclick="window.print()" class="btn btn-outline-primary">
+            <i class="fa-solid fa-print me-2"></i>In phiếu
+        </button>
+        <a asp-controller="DonGoiMon" asp-action="Details" asp-route-id="@Model.MaDonGoiMon" class="btn btn-secondary">
+            Chỉnh/trả món
+        </a>
+    </div>
+</div>
+
+<div class="alert alert-info no-print">
+    <i class="fa-solid fa-circle-info me-2"></i>
+    Nếu khách trả món như nước đóng chai, khăn ướt, hãy quay lại chi tiết đơn gọi món để chọn <strong>Trả món</strong>.
+</div>
+
+<section class="payment-grid">
+    <div class="table-card print-surface">
+        <div class="table-card__header">
+            <div>
+                <h2 class="table-card__title">@Model.TenBan</h2>
+                <div class="text-muted small">Mã đơn @Model.MaDonGoiMon · Giờ vào @Model.GioVao.ToString("dd/MM/yyyy HH:mm")</div>
+            </div>
+            <span class="status-badge status-badge--serving">Tạm tính</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên món</th>
+                        <th>SL</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.ChiTietMons.Count; i++)
+                    {
+                        var item = Model.ChiTietMons[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td><strong>@item.TenMon</strong></td>
+                            <td>@item.SoLuong</td>
+                            <td>@item.DonGia.ToString("N0") VNĐ</td>
+                            <td class="price-text">@item.ThanhTien.ToString("N0") VNĐ</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <form asp-action="XacNhanThanhToan" method="post" class="summary-card no-print">
+        <input type="hidden" asp-for="MaDonGoiMon" />
+        <input id="TongTienMon" value="@Model.TongTienMon" type="hidden" />
+        <input id="TienCocKhauTru" value="@Model.TienCocKhauTru" type="hidden" />
+
+        <span class="page-kicker"><i class="fa-solid fa-calculator"></i> Tính tiền</span>
+
+        <ul class="summary-list mt-2">
+            <li><span>Tạm tính</span><strong>@Model.TongTienMon.ToString("N0") VNĐ</strong></li>
+            <li>
+                <span>Phụ thu</span>
+                <span style="max-width: 150px">
+                    <input asp-for="PhuThu" id="PhuThu" type="number" class="form-control text-end" min="0" />
+                    <span asp-validation-for="PhuThu" class="text-danger"></span>
+                </span>
+            </li>
+            <li><span>Tiền cọc</span><strong>- @Model.TienCocKhauTru.ToString("N0") VNĐ</strong></li>
+        </ul>
+
+        <div class="payment-total mt-4">
+            <span class="payment-total__label">Tổng thanh toán</span>
+            <span class="payment-total__value" id="TongTamTinhHienThi">@Model.TongTamTinh.ToString("N0") VNĐ</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom w-100 py-3 mt-4">
+            <i class="fa-solid fa-receipt me-2"></i>Tạo Hóa Đơn
+        </button>
+    </form>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function capNhatTongTamTinh() {
+            const tongTienMon = parseFloat(document.getElementById("TongTienMon").value) || 0;
+            const phuThu = parseFloat(document.getElementById("PhuThu").value) || 0;
+            const tienCoc = parseFloat(document.getElementById("TienCocKhauTru").value) || 0;
+            const tong = tongTienMon + phuThu - tienCoc;
+            document.getElementById("TongTamTinhHienThi").textContent = tong.toLocaleString("vi-VN") + " VNĐ";
+        }
+
+        document.getElementById("PhuThu").addEventListener("input", capNhatTongTamTinh);
+    </script>
+}

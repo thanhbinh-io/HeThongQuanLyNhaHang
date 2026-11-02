@@ -1,0 +1,59 @@
+@model NhaHangThanhThao.Models.DanhMucMon
+
+@{
+    ViewData["Title"] = "Sửa danh mục món";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-regular fa-pen-to-square"></i> Cập nhật danh mục</span>
+        <h1 class="page-title">Sửa danh mục món</h1>
+        <p class="page-subtitle">Đổi tên nhóm món mà không làm thay đổi mã danh mục đang liên kết với món ăn.</p>
+    </div>
+</div>
+
+<form asp-action="Edit" asp-route-id="@Model.MaDanhMuc" method="post" class="form-shell">
+    <input type="hidden" asp-for="MaDanhMuc" />
+
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="MaDanhMuc" class="form-label">Mã danh mục</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <input asp-for="MaDanhMuc" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="TenDanhMuc" class="form-label">Tên danh mục</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <input asp-for="TenDanhMuc" class="form-control" />
+                </div>
+                <span asp-validation-for="TenDanhMuc" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu thay đổi
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-eye"></i> Hiển thị</span>
+        <div class="status-badge status-badge--booked mt-2">@Model.MaDanhMuc</div>
+        <h2 class="table-card__title mt-3">@Model.TenDanhMuc</h2>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

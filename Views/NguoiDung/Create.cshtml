@@ -1,0 +1,103 @@
+@model NhaHangThanhThao.ViewModels.NguoiDungCreateViewModel
+
+@{
+    ViewData["Title"] = "Thêm tài khoản nhân viên";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-user-plus"></i> Tài khoản mới</span>
+        <h1 class="page-title">Thêm tài khoản nhân viên</h1>
+        <p class="page-subtitle">Tạo tài khoản đăng nhập và phân quyền cho nhân viên sử dụng hệ thống.</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" class="form-shell">
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="HoTen" class="form-label">Họ tên</label>
+                <div class="input-icon">
+                    <i class="fa-regular fa-user"></i>
+                    <input asp-for="HoTen" class="form-control" placeholder="Ví dụ: Nguyễn Văn An" />
+                </div>
+                <span asp-validation-for="HoTen" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-phone"></i>
+                    <input asp-for="SoDienThoai" class="form-control" placeholder="Ví dụ: 0901234567" />
+                </div>
+                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-user-tag"></i>
+                    <input asp-for="TenDangNhap" class="form-control" autocomplete="username" />
+                </div>
+                <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="MatKhau" class="form-label">Mật khẩu</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-lock"></i>
+                    <input asp-for="MatKhau" type="password" class="form-control" autocomplete="new-password" />
+                </div>
+                <span asp-validation-for="MatKhau" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="MaVaiTro" class="form-label">Vai trò</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <select asp-for="MaVaiTro" asp-items="ViewBag.VaiTros" class="form-select">
+                        <option value="">-- Chọn vai trò --</option>
+                    </select>
+                </div>
+                <span asp-validation-for="MaVaiTro" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-toggle-on"></i>
+                    <select asp-for="TrangThai" class="form-select">
+                        <option value="HoatDong">Hoạt động</option>
+                        <option value="Khoa">Khóa tài khoản</option>
+                    </select>
+                </div>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="action-row mt-4">
+            <button type="submit" class="btn btn-primary-custom">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu tài khoản
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+
+    <aside class="summary-card">
+        <span class="page-kicker"><i class="fa-solid fa-shield-halved"></i> Gợi ý phân quyền</span>
+        <ul class="summary-list">
+            <li><span>Quản lý</span><strong>Toàn quyền</strong></li>
+            <li><span>Nhân viên</span><strong>Phục vụ</strong></li>
+            <li><span>Tên đăng nhập</span><strong>Duy nhất</strong></li>
+            <li><span>Số điện thoại</span><strong>Duy nhất</strong></li>
+        </ul>
+    </aside>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

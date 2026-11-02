@@ -1,0 +1,67 @@
+@model IEnumerable<NhaHangThanhThao.Models.DanhMucMon>
+
+@{
+    ViewData["Title"] = "Quản lý danh mục món";
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-layer-group"></i> Nhóm thực đơn</span>
+        <h1 class="page-title">Quản lý danh mục món</h1>
+        <p class="page-subtitle">Sắp xếp nhóm món để nhân viên và khách QR tìm món nhanh hơn.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary-custom">
+            <i class="fa-solid fa-plus me-2"></i>Thêm danh mục
+        </a>
+    </div>
+</div>
+
+<div class="toolbar">
+    <div class="input-icon flex-grow-1">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" class="form-control" placeholder="Tìm theo mã hoặc tên danh mục" data-filter-target=".js-category-row" />
+    </div>
+</div>
+
+<div class="table-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-layer-group"></i>
+                <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                <p>Thêm danh mục đầu tiên để tổ chức thực đơn.</p>
+                <a asp-action="Create" class="btn btn-primary-custom">Thêm danh mục</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Mã danh mục</th>
+                        <th>Tên danh mục</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="js-category-row" data-search="@($"{item.MaDanhMuc} {item.TenDanhMuc}")">
+                            <td><span class="status-badge status-badge--booked">@item.MaDanhMuc</span></td>
+                            <td><strong>@item.TenDanhMuc</strong></td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@item.MaDanhMuc" class="btn btn-warning btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-title="Sửa danh mục">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

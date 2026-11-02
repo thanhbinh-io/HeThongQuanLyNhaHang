@@ -1,0 +1,164 @@
+@model IEnumerable<NhaHangThanhThao.ViewModels.NguoiDungIndexViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản nhân viên";
+    var total = Model.Count();
+    var active = Model.Count(x => x.TrangThai == "HoatDong");
+    var locked = Model.Count(x => x.TrangThai == "Khoa");
+    var managers = Model.Count(x => x.MaVaiTro == "QL");
+
+    string TenTrangThai(string trangThai)
+    {
+        return trangThai switch
+        {
+            "HoatDong" => "Hoạt động",
+            "Khoa" => "Đã khóa",
+            _ => trangThai
+        };
+    }
+
+    string LopTrangThai(string trangThai)
+    {
+        return trangThai switch
+        {
+            "HoatDong" => "active",
+            "Khoa" => "stopped",
+            _ => "hidden"
+        };
+    }
+}
+
+<div class="page-header">
+    <div class="page-header__content">
+        <span class="page-kicker"><i class="fa-solid fa-users-gear"></i> Nhân sự</span>
+        <h1 class="page-title">Quản lý tài khoản nhân viên</h1>
+        <p class="page-subtitle">Theo dõi tài khoản đăng nhập, vai trò và trạng thái hoạt động của nhân viên.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary-custom">
+            <i class="fa-solid fa-user-plus me-2"></i>Thêm nhân viên
+        </a>
+    </div>
+</div>
+
+@if (TempData["Error"] != null || TempData["Success"] != null)
+{
+    <div class="toast-stack">
+        @if (TempData["Success"] != null)
+        {
+            <div class="toast-notice toast-notice--success">
+                <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="toast-notice toast-notice--danger">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["Error"]
+            </div>
+        }
+    </div>
+}
+
+<section class="stats-grid">
+    <div class="stat-card stat-card--gold">
+        <span class="stat-card__icon"><i class="fa-solid fa-id-card"></i></span>
+        <span><span class="stat-card__value">@total</span><span class="stat-card__label">Tổng tài khoản</span></span>
+    </div>
+    <div class="stat-card stat-card--green">
+        <span class="stat-card__icon"><i class="fa-solid fa-circle-check"></i></span>
+        <span><span class="stat-card__value">@active</span><span class="stat-card__label">Đang hoạt động</span></span>
+    </div>
+    <div class="stat-card stat-card--orange">
+        <span class="stat-card__icon"><i class="fa-solid fa-user-shield"></i></span>
+        <span><span class="stat-card__value">@managers</span><span class="stat-card__label">Tài khoản quản lý</span></span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-card__icon"><i class="fa-solid fa-user-lock"></i></span>
+        <span><span class="stat-card__value">@locked</span><span class="stat-card__label">Đã khóa</span></span>
+    </div>
+</section>
+
+<div class="toolbar">
+    <div class="input-icon flex-grow-1">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" class="form-control" placeholder="Tìm theo họ tên, tài khoản, số điện thoại, vai trò" data-filter-target=".js-user-row" />
+    </div>
+    <select class="form-select" style="max-width: 220px" data-status-filter=".js-user-row">
+        <option value="">Tất cả trạng thái</option>
+        <option value="HoatDong">Hoạt động</option>
+        <option value="Khoa">Đã khóa</option>
+    </select>
+</div>
+
+<div class="table-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div>
+                <i class="fa-solid fa-users-gear"></i>
+                <h2 class="empty-state__title">Chưa có dữ liệu</h2>
+                <p>Thêm tài khoản nhân viên để phân quyền sử dụng hệ thống.</p>
+                <a asp-action="Create" class="btn btn-primary-custom">Thêm nhân viên</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Nhân viên</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Số điện thoại</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var tenTrangThai = TenTrangThai(item.TrangThai);
+                        var statusClass = LopTrangThai(item.TrangThai);
+
+                        <tr class="js-user-row"
+                            data-status="@item.TrangThai"
+                            data-search="@($"{item.HoTen} {item.TenDangNhap} {item.SoDienThoai} {item.TenVaiTro} {tenTrangThai}")">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="sidebar__avatar">@item.HoTen.Trim().Substring(0, 1).ToUpper()</span>
+                                    <div>
+                                        <strong>@item.HoTen</strong>
+                                        @if (item.LaTaiKhoanHienTai)
+                                        {
+                                            <div class="text-muted small">Tài khoản đang đăng nhập</div>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@item.TenDangNhap</td>
+                            <td>@item.SoDienThoai</td>
+                            <td><span class="status-badge status-badge--booked">@item.TenVaiTro</span></td>
+                            <td><span class="status-badge status-badge--@statusClass">@tenTrangThai</span></td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@item.MaNguoiDung" class="btn btn-warning btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-title="Sửa tài khoản">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                                <form asp-action="KhoaMo" asp-route-id="@item.MaNguoiDung" method="post" class="d-inline">
+                                    <button type="submit"
+                                            class="btn @(item.TrangThai == "HoatDong" ? "btn-danger-soft" : "btn-primary-custom") btn-icon btn-sm"
+                                            disabled="@item.LaTaiKhoanHienTai"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-title="@(item.TrangThai == "HoatDong" ? "Khóa tài khoản" : "Mở khóa tài khoản")">
+                                        <i class="fa-solid @(item.TrangThai == "HoatDong" ? "fa-user-lock" : "fa-unlock")"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
